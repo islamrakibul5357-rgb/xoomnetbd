@@ -1,65 +1,235 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Xoom IPTV</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#0b1220;color:#fff}
-header{padding:18px 16px;background:#111b2e;position:sticky;top:0;z-index:5;border-bottom:1px solid #26344d}
-h1{margin:0;font-size:24px} .sub{opacity:.7;margin-top:5px;font-size:13px}
-.wrap{max-width:1100px;margin:auto;padding:16px}
-.player{background:#000;border-radius:16px;overflow:hidden;box-shadow:0 8px 30px #0008}
-video{width:100%;display:block;aspect-ratio:16/9;background:#000}
-.controls{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
-input{flex:1;min-width:220px;padding:12px;border-radius:10px;border:1px solid #34435e;background:#111b2e;color:#fff}
-button{padding:12px 16px;border:0;border-radius:10px;background:#1677ff;color:#fff;font-weight:700}
-.card{background:#111b2e;border:1px solid #26344d;border-radius:14px;padding:14px;margin-top:14px}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.small{font-size:12px;opacity:.7;word-break:break-all}
+
+body{
+    margin:0;
+    background:#08111f;
+    color:white;
+    font-family:Arial,sans-serif;
+}
+
+header{
+    background:#101d32;
+    padding:22px 18px;
+    border-bottom:1px solid #263754;
+}
+
+header h1{
+    margin:0;
+    font-size:30px;
+}
+
+header p{
+    margin:8px 0 0;
+    color:#aebbd0;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:18px;
+}
+
+.player{
+    background:#000;
+    border-radius:18px;
+    overflow:hidden;
+    margin-bottom:18px;
+}
+
+video{
+    width:100%;
+    height:auto;
+    min-height:220px;
+    background:#000;
+    display:block;
+}
+
+.url-box{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+input{
+    flex:1;
+    min-width:230px;
+    padding:15px;
+    border-radius:12px;
+    border:1px solid #344866;
+    background:#101d32;
+    color:white;
+    font-size:15px;
+}
+
+button,.download{
+    padding:14px 18px;
+    border:0;
+    border-radius:12px;
+    color:white;
+    font-weight:bold;
+    text-decoration:none;
+    cursor:pointer;
+    font-size:15px;
+}
+
+.play{background:#1677ff}
+.copy{background:#7c3aed}
+.download{background:#16a34a}
+.save{background:#ea580c}
+
+.buttons{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:12px;
+}
+
+.card{
+    margin-top:18px;
+    padding:18px;
+    border-radius:16px;
+    background:#101d32;
+    border:1px solid #263754;
+}
+
+.card h2{
+    margin:0 0 8px;
+}
+
+.link{
+    color:#aebbd0;
+    word-break:break-all;
+}
 </style>
 </head>
+
 <body>
+
 <header>
-  <h1>📺 Xoom IPTV</h1>
-  <div class="sub">Xoom Net IPTV Player</div>
+    <h1>📺 Xoom IPTV</h1>
+    <p>Xoom Net IPTV Player</p>
 </header>
-<div class="wrap">
-  <div class="player"><video id="video" controls playsinline></video></div>
 
-  <div class="controls">
-    <input id="url" value="http://172.16.254.200/tv.m3u8" placeholder="M3U8 URL">
-    <button onclick="playUrl()">▶ Play</button>
-    <button onclick="copyUrl()">📋 Copy</button>
-  </div>
+<div class="container">
 
-  <div class="card">
-    <b>IPTV M3U8 Link</b>
-    <div class="small" id="shown">http://172.16.254.200/tv.m3u8</div>
-  </div>
+    <div class="player">
+        <video id="video" controls playsinline></video>
+    </div>
 
-  <div class="card">
-    <b>নোট</b>
-    <div class="small">এই M3U8 লিংকটি private/local IP হলে Xoom Net-এর নিজের নেটওয়ার্কের বাইরে থেকে ভিডিও নাও চলতে পারে।</div>
-  </div>
+    <div class="url-box">
+        <input id="m3u8"
+        value="http://172.16.254.200/tv.m3u8">
+
+        <button class="play" onclick="playIPTV()">
+            ▶ Play
+        </button>
+    </div>
+
+    <div class="buttons">
+
+        <button class="copy" onclick="copyM3U8()">
+            📋 Copy
+        </button>
+
+        <a class="download"
+           id="downloadLink"
+           href="http://172.16.254.200/tv.m3u8"
+           download="xoom-tv.m3u8">
+            ⬇ Download M3U8
+        </a>
+
+        <button class="save" onclick="savePlaylist()">
+            ⬇ Save Playlist
+        </button>
+
+    </div>
+
+    <div class="card">
+        <h2>IPTV M3U8 Link</h2>
+        <div class="link" id="showLink">
+            http://172.16.254.200/tv.m3u8
+        </div>
+    </div>
+
 </div>
 
 <script>
-const video=document.getElementById('video');
-const urlInput=document.getElementById('url');
-const shown=document.getElementById('shown');
 
-function playUrl(){
-  const u=urlInput.value.trim();
-  shown.textContent=u;
-  if(!u) return;
-  video.src=u;
-  video.play().catch(()=>{});
+const input = document.getElementById("m3u8");
+const video = document.getElementById("video");
+
+function playIPTV(){
+
+    const url = input.value.trim();
+
+    if(!url){
+        alert("M3U8 link দিন");
+        return;
+    }
+
+    video.src = url;
+    video.play().catch(function(){
+        alert("এই M3U8 লিংকটি ব্রাউজারে সরাসরি Play করা যাচ্ছে না।");
+    });
 }
-function copyUrl(){
-  navigator.clipboard.writeText(urlInput.value).then(()=>alert('M3U8 link copied'));
+
+function copyM3U8(){
+
+    navigator.clipboard.writeText(input.value)
+    .then(function(){
+        alert("M3U8 Link Copied!");
+    });
 }
+
+function savePlaylist(){
+
+    const url = input.value.trim();
+
+    const playlist =
+`#EXTM3U
+#EXTINF:-1,Xoom IPTV
+${url}
+`;
+
+    const blob = new Blob(
+        [playlist],
+        {type:"application/x-mpegURL"}
+    );
+
+    const a = document.createElement("a");
+
+    a.href = URL.createObjectURL(blob);
+    a.download = "xoom-playlist.m3u";
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(a.href);
+}
+
+input.addEventListener("input",function(){
+
+    document.getElementById("showLink").textContent =
+        input.value;
+
+    document.getElementById("downloadLink").href =
+        input.value;
+
+});
+
+</script>
+
+</body>
+</html>}
 </script>
 </body>
 </html>
